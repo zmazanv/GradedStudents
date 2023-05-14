@@ -2,52 +2,45 @@ package io.zipcoder;
 
 import io.zipcoder.comparators.StudentDescendingComparator;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 
 public class Classroom {
-    private Student[] students;
+    private final List<Student> students = new ArrayList<>();
 
-    public Classroom() {
-        this.students = new Student[30];
-    }
-    public Classroom(int maxNumberOfStudents) {
-        this.students = new Student[maxNumberOfStudents];
-    }
+    public Classroom() {}
     public Classroom(Student[] students) {
-        this.students = students;
+        this.students.addAll(Arrays.asList(students));
+    }
+    public Classroom(List<Student> students) {
+        this.students.addAll(students);
     }
 
-    public Student[] getStudents() {
+    public List<Student> getStudents() {
         return this.students;
     }
-    public Student[] getStudentsByScore() {
-        Student[] studentsByScore = new Student[this.students.length];
-        System.arraycopy(this.students, 0,studentsByScore, 0, this.students.length);
-        Arrays.sort(studentsByScore, new StudentDescendingComparator());
+    public List<Student> getStudentsByScore() {
+        List<Student> studentsByScore = new ArrayList<>(this.students);
+        studentsByScore.sort(new StudentDescendingComparator());
         return studentsByScore;
     }
     public Map<Student, Character> getGradeBook() {
         Map<Student, Character> gradeBook = new TreeMap<>(new StudentDescendingComparator());
-        Student[] studentsByScore = this.getStudentsByScore();
-        for (int i = 0; i < this.students.length; i++) {
-            Student student = studentsByScore[i];
-            double percentileRank = (double)(i + 1) / this.students.length * 100;
+        List<Student> studentsByScore = new ArrayList<>(this.students);
+        for (int i = 0; i < this.students.size(); i++) {
+            double percentileRank = (double)(i + 1) / this.students.size() * 100;
             char grade = 0;
-            if (percentileRank < 10) {
+            if (percentileRank <= 10) {
                 grade = 'A';
-            } else if (percentileRank < 30) {
+            } else if (percentileRank <= 30) {
                 grade = 'B';
-            } else if (percentileRank < 50) {
+            } else if (percentileRank <= 50) {
                 grade = 'C';
-            } else if (percentileRank < 90) {
+            } else if (percentileRank <= 90) {
                 grade = 'D';
             } else {
                 grade = 'F';
             }
-            gradeBook.put(student, grade);
+            gradeBook.put(studentsByScore.get(i), grade);
         }
         return gradeBook;
     }
@@ -56,35 +49,24 @@ public class Classroom {
         for (Student student : this.students) {
             examScoreAveragesSum += student.getAverageExamScore();
         }
-        return (examScoreAveragesSum / this.students.length);
+        return (examScoreAveragesSum / this.students.size());
     }
 
     public void addStudent(Student student) {
-        Student[] studentsPlusOne = new Student[this.students.length + 1];
-        System.arraycopy(this.students, 0, studentsPlusOne, 0, this.students.length);
-        studentsPlusOne[studentsPlusOne.length - 1] = student;
-        this.students = studentsPlusOne;
+        this.students.add(student);
     }
 
     public void removeStudent(Student studentToBeRemoved) {
-        Student[] studentsMinusOne = new Student[this.students.length - 1];
-        for (int i = 0; i < this.students.length; i++) {
-            if (!(Objects.equals(this.students[i], studentToBeRemoved))) {
-                studentsMinusOne[i] = this.students[i];
-            }
-        }
-        this.students = studentsMinusOne;
+        this.students.remove(studentToBeRemoved);
     }
     public void removeStudent(String firstNameOfStudentToBeRemoved, String lastNameOfStudentToBeRemoved) {
         String fullNameOfStudentToBeRemoved = firstNameOfStudentToBeRemoved + ' ' + lastNameOfStudentToBeRemoved;
-        Student[] studentsMinusOne = new Student[this.students.length - 1];
-        int counter = 0;
-        for (int i = 0; i < this.students.length; i++) {
-            if (!(Objects.equals(this.students[i].getFullName().toLowerCase(), fullNameOfStudentToBeRemoved.toLowerCase()))) {
-                studentsMinusOne[counter] = this.students[i];
-                counter++;
+        Student studentToBeRemoved = null;
+        for (Student student : this.students) {
+            if (Objects.equals(student.getFullName().toLowerCase(), fullNameOfStudentToBeRemoved.toLowerCase())) {
+                studentToBeRemoved = student;
             }
         }
-        this.students = studentsMinusOne;
+        this.students.remove(studentToBeRemoved);
     }
 }

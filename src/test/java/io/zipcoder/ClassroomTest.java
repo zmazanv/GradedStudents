@@ -22,8 +22,8 @@ public class ClassroomTest {
 
     @Test
     public void testConstructor() {
-        Classroom testClassroom = new Classroom(10);
-        assertEquals(10, testClassroom.getStudents().length);
+        Classroom testClassroom = new Classroom(this.students);
+        assertEquals(3, testClassroom.getStudents().size());
     }
 
     @Test
@@ -37,28 +37,31 @@ public class ClassroomTest {
     public void testAddStudent() {
         Student newStudent = new Student("David", "White", Arrays.asList(80.0, 85.0));
         classroom.addStudent(newStudent);
-        assertEquals(4, classroom.getStudents().length);
-        assertEquals(newStudent, classroom.getStudents()[classroom.getStudents().length - 1]);
+        assertEquals(4, classroom.getStudents().size());
+
+        assertEquals(newStudent, classroom.getStudents().get(classroom.getStudents().size() - 1));
     }
 
     @Test
     public void testRemoveStudent() {
+        System.out.println(classroom.getStudents());
+        System.out.println();
         classroom.removeStudent("Alice", "Johnson");
-        assertEquals(2, classroom.getStudents().length);
+        System.out.println(classroom.getStudents());
+        assertEquals(2, classroom.getStudents().size());
         assertFalse(Arrays.asList(classroom.getStudents()).contains(students[0]));
     }
 
     @Test
     public void testGetStudentsByScore() {
-        Student[] expected = {students[0], students[1], students[2]};
-        Student[] actual = classroom.getStudentsByScore();
+        List<Student> expected = new ArrayList<>(Arrays.asList(this.students));
+        List<Student> actual = classroom.getStudentsByScore();
         assertEquals(expected, actual);
     }
 
     @Test
     public void testGetGradeBook() {
         Map<Student, Character> gradeBook = classroom.getGradeBook();
-        System.out.println(gradeBook);
         assertEquals('C', (char) gradeBook.get(students[0]));
         assertEquals('D', (char) gradeBook.get(students[1]));
         assertEquals('F', (char) gradeBook.get(students[2]));
